@@ -7,7 +7,15 @@ class Neural:
         self.weights = [np.random.random(), np.random.random(), np.random.random()]
     
     def activate(self, x):
+        # Sigmoid
         return 1/(1+np.exp(-x))
+
+        # # ReLU
+        # if x > 0:
+        #     return x
+        # else:
+        #     return 0
+    
         # if x > 0:
         #     return 1
         # else:
