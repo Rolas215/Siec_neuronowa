@@ -8,7 +8,7 @@ class Neural:
     
     def activate(self, x):
         return 1/(1+np.exp(-x))
-        # if outputP > 0:
+        # if x > 0:
         #     return 1
         # else:
         #     return 0
