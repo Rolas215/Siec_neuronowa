@@ -10,6 +10,42 @@ def d_sigmoid(inputs):
     sigmoidP = sigmoid(inputs)
     return sigmoidP*(1-sigmoidP)
 
+#import numpy as np 
+
+#def sigmoid(inputs):
+    """
+    Oblicza funkcję sigmoidalną dla danego wejścia.
+
+    Funkcja sigmoidalna jest zdefiniowana jako:
+    σ(x) = 1 / (1 + e^(-x))
+
+    Parametry:
+    inputs (numpy.ndarray lub float): Wartość lub tablica wartości, dla których ma być obliczona funkcja sigmoidalna.
+
+    Zwraca:
+    numpy.ndarray lub float: Wartość lub tablica wartości po zastosowaniu funkcji sigmoidalnej.
+    """
+    return 1 / (1 + np.exp(np.negative(inputs)))
+
+
+#def d_sigmoid(inputs):
+    """
+    Oblicza pochodną funkcji sigmoidalnej dla danego wejścia.
+
+    Pochodna funkcji sigmoidalnej jest zdefiniowana jako:
+    σ'(x) = σ(x) * (1 - σ(x))
+    gdzie σ(x) jest wartością funkcji sigmoidalnej dla x.
+
+    Parametry:
+    inputs (numpy.ndarray lub float): Wartość lub tablica wartości, dla których ma być obliczona pochodna funkcji sigmoidalnej.
+
+    Zwraca:
+    numpy.ndarray lub float: Wartość lub tablica wartości po zastosowaniu pochodnej funkcji sigmoidalnej.
+    """
+    sigmoidP = sigmoid(inputs)
+    return sigmoidP * (1 - sigmoidP)
+
+
 
 # Layer
 class Layer:
