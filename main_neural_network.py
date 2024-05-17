@@ -3,16 +3,6 @@ import json
 
 
 def sigmoid(inputs):
-    return 1/(1+np.exp(np.negative(inputs)))
-
-
-def d_sigmoid(inputs):
-    sigmoidP = sigmoid(inputs)
-    return sigmoidP*(1-sigmoidP)
-
-#import numpy as np 
-
-#def sigmoid(inputs):
     """
     Oblicza funkcję sigmoidalną dla danego wejścia.
 
@@ -25,11 +15,10 @@ def d_sigmoid(inputs):
     Zwraca:
     numpy.ndarray lub float: Wartość lub tablica wartości po zastosowaniu funkcji sigmoidalnej.
     """
-    return 1 / (1 + np.exp(np.negative(inputs)))
+    return 1/(1+np.exp(np.negative(inputs)))
 
-
-#def d_sigmoid(inputs):
-    """
+def d_sigmoid(inputs):
+        """
     Oblicza pochodną funkcji sigmoidalnej dla danego wejścia.
 
     Pochodna funkcji sigmoidalnej jest zdefiniowana jako:
@@ -43,8 +32,7 @@ def d_sigmoid(inputs):
     numpy.ndarray lub float: Wartość lub tablica wartości po zastosowaniu pochodnej funkcji sigmoidalnej.
     """
     sigmoidP = sigmoid(inputs)
-    return sigmoidP * (1 - sigmoidP)
-
+    return sigmoidP*(1-sigmoidP)
 
 
 # Layer
