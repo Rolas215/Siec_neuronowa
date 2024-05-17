@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 np.set_printoptions(suppress=True)
 
@@ -6,12 +7,13 @@ np.set_printoptions(suppress=True)
 def sigmoid(inputs):
     return 1/(1+np.exp(np.negative(inputs)))
 
+
 def d_sigmoid(inputs):
     sigmoidP = sigmoid(inputs)
     return sigmoidP*(1-sigmoidP)
 
 
-#Layer
+# Layer
 class Layer:
     def __init__(self, input_n, output_n):
         self.weights = [[-2]*output_n]*input_n #np.random.rand(input_n, output_n)*2-2
@@ -22,7 +24,8 @@ class Layer:
     def forward(self, inputs):
         self.Y = np.dot(inputs, self.weights) + self.biases
 
-#Neural network that chooses dominant color of image from multiple numbers (pseudo-pixels n(X)=20)
+
+# Neural network that chooses dominant color of image from multiple numbers (pseudo-pixels n(X)=20)
 class Neural:
     """
     Neural Network Class
@@ -39,6 +42,19 @@ class Neural:
         if (type(self.layers) != list):
             self.layers = [self.layers]
 
+    def save_to_json(self):
+        data_to_save = {
+            'weights': layer1.weights,
+            'biases': layer1.biases
+        }
+        with open('zmienne.json', 'w') as json_file:
+            json.dump(data_to_save, json_file)
+        try:
+            with open("zmienne.json", "r") as input_file:
+                content = json.load(input_file)
+                print(f"Zawartość pliku json: {content}\n")
+        except FileNotFoundError:
+            print("Nie znaleziono pliku!")
 
     def test(self, input):
         self.X = [sigmoid(layer.Y) for layer in self.layers if (layer == self.layers[-1])]
@@ -80,7 +96,7 @@ layer1 = Layer(2, 4)
 layer2 = Layer(4, 1)
 
 net = Neural([layer1, layer2])
-# net.test(X)
+net.save_to_json()
 # print(net.get_net_output())
 
 for i in range(500):
@@ -89,3 +105,4 @@ for i in range(500):
 
 net.test(X)
 print(net.get_net_output())
+
