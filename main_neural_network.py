@@ -1,6 +1,8 @@
 import numpy as np
 import json
 
+np.set_printoptions(suppress=True)
+
 
 def sigmoid(inputs):
     """
@@ -18,7 +20,7 @@ def sigmoid(inputs):
     return 1/(1+np.exp(np.negative(inputs)))
 
 def d_sigmoid(inputs):
-        """
+    """
     Oblicza pochodną funkcji sigmoidalnej dla danego wejścia.
 
     Pochodna funkcji sigmoidalnej jest zdefiniowana jako:
@@ -35,42 +37,76 @@ def d_sigmoid(inputs):
     return sigmoidP*(1-sigmoidP)
 
 
-# Layer
+#Layer
 class Layer:
     def __init__(self, input_n, output_n):
-        self.weights = np.random.rand(input_n, output_n)*2-1
+        self.weights = [[-2]*output_n]*input_n #np.random.rand(input_n, output_n)*2-2
         self.biases = [0]*output_n
+        self.Y = 0
+        self.X = 0
 
     def forward(self, inputs):
-        self.Y = np.dot(inputs, self.weights) + self.biases
+        self.X = inputs
+        self.Y = np.dot(self.X, self.weights) + self.biases
 
-
-# Neural network that chooses dominant color of image from multiple numbers (pseudo-pixels n(X)=20)
+#Neural network that chooses dominant color of image from multiple numbers (pseudo-pixels n(X)=20)
 class Neural:
-    def __init__(self):
-        pass
-
-    def Backprop(self, derivative_func, dot_sum, y_out, y_true):
-        self.error = y_true-np.array(y_out).T
-        self.d_x = np.array(derivative_func(dot_sum)).T*2*(self.error)
-        return self.d_x
-
-
-net = Neural()
-
-X = [[1, 1], [1, 0], [0, 1], [0, 0]]
-Y = [1, 0, 0, 0]
-
-layer1 = Layer(2, 1)
+    """
+    Neural Network Class
+    
+    Parameters
+    ----------
+        `layers`
+            Lista utworzonych warstw sieci neuronowej, podana w kolejności chronologicznej
+    """
+    def __init__(self, layers):
+        self.layers = layers
+        if (type(self.layers) != list):
+            self.layers = [self.layers]
 
 
-for i in range(50):
-    for j in range(len(X)):
-        layer1.forward(X[j])
+    def test(self, input):
+        self.layers[0].forward(input)
 
-        net.Backprop(d_sigmoid, layer1.Y, sigmoid(layer1.Y), Y[j])
-        layer1.weights += np.dot(np.array([X[j]]).T, [net.d_x])
-        layer1.biases += net.d_x
+        for j in range(1, len(self.layers)):
+            self.layers[j].forward(sigmoid(self.layers[j-1].Y))
+    
+
+    def get_net_output(self):
+        return sigmoid(self.layers[-1].Y)
+    
+
+    def train(self, input, output):
+        self.test(input)
+        self.Backprop(d_sigmoid, output)
+        
+
+    def Backprop(self, derivative_func, y_true):
+        ratio = (2*(y_true-sigmoid(self.layers[-1].Y))).T
+        for j in reversed(range(len(self.layers))):
+            ratio = derivative_func(self.layers[j].Y)*ratio.T
+
+            self.layers[j].weights += np.dot(np.array(self.layers[j].X).T, ratio)
+            self.layers[j].biases += sum(ratio)
+
+            ratio = np.dot(self.layers[j].weights, ratio.T)
+
+
+# Training Data
+X = [[1,1],[1,0],[0,1],[0,0]]
+Y = [[1],[0],[0],[0]]
+
+# Initialize Network
+layer1 = Layer(2, 8)
+layer2 = Layer(8, 4)
+layer3 = Layer(4, 4)
+layer4 = Layer(4, 1)
+net = Neural([layer1, layer2, layer3, layer4])
+
+# Train Network
+for i in range(500):
+    net.train(X, Y)
+
 
 ###
 # W tym miejscu - zapis layer1.weights (2 zmienne) i layer1.bias (1 zmienna) do pliku json
@@ -89,5 +125,7 @@ try:
 except FileNotFoundError:
     print("Nie znaleziono pliku!")
 
-layer1.forward(X)
-print(sigmoid(layer1.Y))
+
+# Test Network
+net.test(X)
+print(net.get_net_output())
