@@ -1,2 +1,2 @@
-jebac lgbt <br>
-rel sigma
+Sieć Neuronowa <br>
+Projekt Python
