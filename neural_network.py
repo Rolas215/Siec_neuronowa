@@ -98,6 +98,13 @@ def d_sigmoid(inputs):
 
 # Warstwa
 class Layer:
+    """
+    Tworzy warstwę sieci neuronowej
+
+    Parametry:
+        input_n: Liczba neuronów wejściowych warstwy
+        output_n: Liczba neuronów wyjściowych warstwy
+    """
     def __init__(self, input_n, output_n):
         self.weights = [[-2]*output_n]*input_n #np.random.rand(input_n, output_n)*2-2
         self.biases = [0]*output_n
@@ -105,18 +112,26 @@ class Layer:
         self.X = 0
 
     def forward(self, inputs):
+        """
+        Przepuszczenie danych wejściowych przez warstwę sieci i obliczenie danych wyjściowych warstwy
+
+        Parametry:
+            inputs: Dane wejściowe warstwy
+        
+        Zapisuje 
+            dane wejściowe jako X
+            dane wyjściowe jako Y
+        """
         self.X = inputs
         self.Y = np.dot(self.X, self.weights) + self.biases
 
 # Sieć neuronowa
 class Neural:
     """
-    Neural Network Class
+    Tworzy sieć neuronową
     
-    Parameters
-    ----------
-        `layers`
-            Lista utworzonych warstw sieci neuronowej, podana w kolejności chronologicznej
+    Parametry:
+        layers: lista warstw sieci neurnowej podana chronologicznie
     """
     def __init__(self, layers):
         self.layers = layers
@@ -124,19 +139,45 @@ class Neural:
             self.layers = [self.layers]
 
     def test(self, input):
+        """
+        Przeprowadza dane wejściowe przez sieć neuronową, kolejno przez każdą warstwę sieci
+
+        Parametry:
+            input: Dane wejściowe sieci
+        """
         self.layers[0].forward(input)
 
         for j in range(1, len(self.layers)):
             self.layers[j].forward(sigmoid(self.layers[j-1].Y))
 
     def get_net_output(self):
+        """
+        Pobiera dane wyjściowe sieci neuronowej
+
+        Zwraca:
+            Dane wyjściowe sieci
+        """
         return sigmoid(self.layers[-1].Y)
     
     def train(self, input, output):
+        """
+        Przeprowadza dane wejściowe przez sieć neuronową, następnie uczy sieć neuronową na podstawie oczekiwanych danych wyjściowych
+
+        Parametry:
+            input: Dane wejściowe sieci
+            output: Oczekiwane dane wyjściowe sieci
+        """
         self.test(input)
         self.Backprop(d_sigmoid, output)
         
     def Backprop(self, derivative_func, y_true):
+        """
+        Wsteczna propagacja sieci neuronowej, proces uczenia sieci porównujący oczekiwane dane wyjściowe i otrzymane dane wyjściowe, na podstawie różnicy tych wartości poprawia wagi i biasy kolejnych warstw
+
+        Parametry:
+            derivative_func: Pochodna funkcji aktywacji
+            t_true: Oczekiwane dane wyjściowe sieci
+        """
         ratio = (2*(y_true-sigmoid(self.layers[-1].Y))).T
         for layer in reversed(self.layers):
             ratio = derivative_func(layer.Y)*ratio.T
@@ -147,6 +188,12 @@ class Neural:
             ratio = np.dot(layer.weights, ratio.T)
     
     def data_import(self, file):
+        """
+        Importuje wagi i biasy każdej z warstw z pliku
+
+        Parametry:
+            file: Nazwa pliku do odczytu ze zmiennymi w formacjie .json
+        """
         try:
             with open(file, "r") as input_file:
                 content = json.load(input_file)
@@ -157,6 +204,12 @@ class Neural:
             print("Nie znaleziono pliku do zaimportowania!")
 
     def data_export(self, file):
+        """
+        Eksportuje wagi i biasy każdej z warstw z pliku
+
+        Parametry:
+            file: Nazwa pliku do zapisu zmiennych w formacie .json
+        """
         n = 1
         data_to_save = {}
         for layer in self.layers:
