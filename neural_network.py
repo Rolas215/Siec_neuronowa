@@ -193,6 +193,28 @@ if(not args.config_save):
     if(args.export_file):
         net.data_export(Export_file)
 
-    # Test sieci
+    try:
+        with open("historical-results.json", "r") as input_file:
+            content = json.load(input_file)
+    except FileNotFoundError:
+        content = {}
+
+    # Ensure 'data' key exists in the content dictionary
+    if 'data' not in content:
+        content['data'] = []
+
+    # Test Network
     net.test(X)
     print(net.get_net_output())
+
+    data_results = {
+        'results': net.get_net_output().tolist()
+    }
+
+    content["data"].append(data_results)
+
+    try:
+        with open("historical-results.json", "w") as output_file:
+            json.dump(content, output_file, indent=4)
+    except FileNotFoundError:
+        print("Nie znaleziono pliku!")
